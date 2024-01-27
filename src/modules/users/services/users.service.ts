@@ -2,12 +2,13 @@ import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
 import { HttpException, Injectable } from "@nestjs/common";
 import { compare, hash } from 'bcrypt';
-import { createUserDto } from "../dto/createUserDto.dto";
+import { createUserDto } from "../dto/createUser.dto";
 import { updateUserDto } from "../dto/updateUser.dto";
-import { User } from "../dto/user.entity";
-import { UserDto } from "../dto/userDto.dto";
+import { User } from "../schemas/user.entity";
+import { UserDto } from "../dto/user.dto";
 import { UsersRepository } from "../repositories/users.repository";
 import { IUsersService } from "./users.service.interface";
+import { userSkillsDto } from "../dto/userSkills.dto";
 
 @Injectable()
 export class UsersService implements IUsersService {
@@ -78,7 +79,11 @@ export class UsersService implements IUsersService {
     async delete(id: number): Promise<boolean> {
         return await this.usersRepository.delete(id);
     }
-    
+
+    async updateSkills(userSkills: userSkillsDto): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
+
     async addSkill(userId: number, skillId: number): Promise<UserDto> {
         throw new Error("Method not implemented.");
     }

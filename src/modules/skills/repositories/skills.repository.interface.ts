@@ -1,4 +1,4 @@
-import { Skill } from "../dto/skill.entity";
+import { Skill } from "../schemas/skill.entity";
 
 export interface ISkillsRepository {
     getAll(): Promise<Skill[]>;

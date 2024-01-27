@@ -2,8 +2,8 @@ import { Body, Controller, ForbiddenException, HttpCode, HttpStatus, Post } from
 import { LoginDto } from "./dto/login.dto";
 import { AuthService } from "./services/auth.service";
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { createUserDto } from "src/modules/users/dto/createUserDto.dto";
-import { UserDto } from "src/modules/users/dto/userDto.dto";
+import { createUserDto } from "src/modules/users/dto/createUser.dto";
+import { UserDto } from "src/modules/users/dto/user.dto";
 
 @Controller('auth')
 @ApiTags('Auth')

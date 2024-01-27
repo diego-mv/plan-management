@@ -1,4 +1,4 @@
-import { User } from "../dto/user.entity";
+import { User } from "../schemas/user.entity";
 
 export interface IUsersRepository {
     getAll(): Promise<User[]>;

@@ -1,11 +1,11 @@
 import { Mapper, MappingProfile, createMap } from "@automapper/core";
 import { AutomapperProfile, InjectMapper } from "@automapper/nestjs";
 import { Injectable } from "@nestjs/common";
-import { createSkillDto } from "src/modules/skills/dto/createSkillDto.dto";
-import { Skill } from "src/modules/skills/dto/skill.entity";
-import { SkillDto } from "src/modules/skills/dto/skilldto.dto";
-import { User } from "src/modules/users/dto/user.entity";
-import { UserDto } from "src/modules/users/dto/userDto.dto";
+import { createSkillDto } from "src/modules/skills/dto/createSkill.dto";
+import { Skill } from "src/modules/skills/schemas/skill.entity";
+import { SkillDto } from "src/modules/skills/dto/skill.dto";
+import { User } from "src/modules/users/schemas/user.entity";
+import { UserDto } from "src/modules/users/dto/user.dto";
 
 @Injectable()
 export class AutoMapperCustomProfile extends AutomapperProfile {

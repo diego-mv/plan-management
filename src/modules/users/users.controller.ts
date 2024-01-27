@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Put } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserDto } from './dto/userDto.dto';
-import { UsersService } from './services/users.service';
+import { Body, Controller, Delete, Get, HttpCode, Param, Put } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { updateUserDto } from './dto/updateUser.dto';
+import { UserDto } from './dto/user.dto';
+import { userSkillsDto } from './dto/userSkills.dto';
+import { UsersService } from './services/users.service';
+import { createSkillDto } from '../skills/dto/createSkill.dto';
 
 @Controller('users')
 @ApiTags('Users')
@@ -42,5 +44,18 @@ export class UsersController {
   @ApiParam({ name: 'id', allowEmptyValue: false, description: 'User Id', required: true, type: 'number' })
   async deleteById(@Param('id') id: number): Promise<boolean> {
     return await this.usersService.delete(id);
+  }
+
+  @Put('updateSkillsOfUser')
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Update list of skills of user' })
+  @ApiBody({
+    type: userSkillsDto, required: true
+  })
+  @ApiResponse({ status: 200, description: 'OK', isArray: true })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  async updateSkillsOfUser(@Body() userSkills: userSkillsDto) {
+    await this.usersService.updateSkills(userSkills);
+    return 'OK';
   }
 }

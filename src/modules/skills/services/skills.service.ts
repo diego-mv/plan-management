@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ISkillsService } from './skills.service.interface';
-import { Skill } from '../dto/skill.entity';
+import { Skill } from '../schemas/skill.entity';
 import { SkillsRepository } from '../repositories/skills.repository';
 import { InjectMapper } from '@automapper/nestjs';
 import { Mapper } from '@automapper/core';
-import { SkillDto } from '../dto/skilldto.dto';
-import { createSkillDto } from '../dto/createSkillDto.dto';
+import { SkillDto } from '../dto/skill.dto';
+import { createSkillDto } from '../dto/createSkill.dto';
 
 @Injectable()
 export class SkillsService implements ISkillsService {

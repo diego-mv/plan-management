@@ -1,4 +1,4 @@
-import { SkillDto } from "../dto/skilldto.dto";
+import { SkillDto } from "../dto/skill.dto";
 
 export interface ISkillsService {
     getAll(): Promise<SkillDto[]>;

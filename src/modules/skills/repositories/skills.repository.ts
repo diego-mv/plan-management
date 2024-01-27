@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { ISkillsRepository } from "./skills.repository.interface";
-import { Skill } from "../dto/skill.entity";
+import { Skill } from "../schemas/skill.entity";
 import { Model, Types } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 

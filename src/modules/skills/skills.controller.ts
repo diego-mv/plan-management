@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
-import { createSkillDto } from "./dto/createSkillDto.dto";
-import { Skill } from "./dto/skill.entity";
+import { createSkillDto } from "./dto/createSkill.dto";
+import { Skill } from "./schemas/skill.entity";
 import { SkillsService } from "./services/skills.service";
 import { AuthGuard } from "src/auth/guards/auth.guard";
 
