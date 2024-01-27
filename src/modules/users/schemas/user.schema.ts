@@ -2,7 +2,11 @@ import { Schema } from 'mongoose';
 import { SkillSchema } from 'src/modules/skills/schemas/skill.schema';
 
 export const UserSchema = new Schema({
+  id: { type: Number, required: true },
+  email: { type: String, required: true },
   name: { type: String, required: true },
+  surname: { type: String, required: true },
+  password: { type: String, required: true },
   skills: [
     {
       skillId: { type: Number, ref: 'Skill' },

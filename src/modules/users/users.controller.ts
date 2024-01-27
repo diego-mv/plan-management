@@ -1,18 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { createUserDto } from './dto/createUserDto.dto';
-import { UsersService } from './services/users.service';
+import { Body, Controller, Delete, Get, Param, Put } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from './dto/userDto.dto';
-import { User } from './dto/user.entity';
-import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { UsersService } from './services/users.service';
+import { updateUserDto } from './dto/updateUser.dto';
 
 @Controller('users')
 @ApiTags('Users')
+@ApiBearerAuth()
 export class UsersController {
 
   constructor(private usersService: UsersService) { }
-  
+
   @Get('getAll')
+  @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: 200, description: 'OK', isArray: true })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   async getAll(): Promise<UserDto[]> {
@@ -20,31 +20,23 @@ export class UsersController {
   }
 
   @Get('getById')
+  @ApiOperation({ summary: 'Get an user by Id' })
   @ApiResponse({ status: 200, description: 'OK', isArray: true })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   async getById(@Param('id') id: number): Promise<UserDto> {
     return await this.usersService.getById(id);
   }
 
-  @Post('create')
+  @Put('update')
+  @ApiOperation({ summary: 'Update a user by userId and new data' })
   @ApiResponse({ status: 200, description: 'OK', isArray: true })
   @ApiResponse({ status: 403, description: 'Forbidden' })
-  @ApiBody({
-    type: createUserDto, description: 'new User', required: true,
-    examples: {
-      example: {
-        description: 'createUserDto',
-        value: {
-
-        }
-      }
-    }
-  })
-  async create(@Body() user: createUserDto): Promise<UserDto> {
-    return await this.usersService.create(user);
+  async update(@Body() user: updateUserDto): Promise<UserDto> {
+    return await this.usersService.update(user.id, user);
   }
 
   @Delete('deleteById/:id')
+  @ApiOperation({ summary: 'Delete a user by userId' })
   @ApiResponse({ status: 200, description: 'OK', isArray: true })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiParam({ name: 'id', allowEmptyValue: false, description: 'User Id', required: true, type: 'number' })

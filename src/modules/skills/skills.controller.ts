@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from "@nestjs/common";
-import { ApiBearerAuth, ApiBody, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { createSkillDto } from "./dto/createSkillDto.dto";
 import { Skill } from "./dto/skill.entity";
 import { SkillsService } from "./services/skills.service";
@@ -14,6 +14,7 @@ export class SkillsController {
   constructor(private skillsService: SkillsService) { }
 
   @Get('getAll')
+  @ApiOperation({summary: 'Get all active skills'})
   @ApiResponse({ status: 200, description: 'OK', isArray: true })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   async getAll(): Promise<Skill[]> {
@@ -21,6 +22,7 @@ export class SkillsController {
   }
 
   @Get('getById/:id')
+  @ApiOperation({summary: 'Get a skill by Id'})
   @ApiResponse({ status: 200, description: 'OK', isArray: true })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiParam({ name: 'id', allowEmptyValue: false, description: 'Skill Id', required: true, type: 'number' })
@@ -29,6 +31,7 @@ export class SkillsController {
   }
 
   @Post('create')
+  @ApiOperation({summary: 'Create an skill'})
   @ApiResponse({ status: 200, description: 'OK', isArray: true })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiBody({
@@ -47,6 +50,7 @@ export class SkillsController {
   }
 
   @Delete('deleteById/:id')
+  @ApiOperation({summary: 'Delete a skill by skillId'})
   @ApiResponse({ status: 200, description: 'OK', isArray: true })
   @ApiResponse({ status: 403, description: 'Forbidden' })
   @ApiParam({ name: 'id', allowEmptyValue: false, description: 'Skill Id', required: true, type: 'number' })

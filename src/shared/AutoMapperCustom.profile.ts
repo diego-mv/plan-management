@@ -4,6 +4,8 @@ import { Injectable } from "@nestjs/common";
 import { createSkillDto } from "src/modules/skills/dto/createSkillDto.dto";
 import { Skill } from "src/modules/skills/dto/skill.entity";
 import { SkillDto } from "src/modules/skills/dto/skilldto.dto";
+import { User } from "src/modules/users/dto/user.entity";
+import { UserDto } from "src/modules/users/dto/userDto.dto";
 
 @Injectable()
 export class AutoMapperCustomProfile extends AutomapperProfile {
@@ -13,9 +15,17 @@ export class AutoMapperCustomProfile extends AutomapperProfile {
 
     override get profile(): MappingProfile {
         return (mapper) => {
+            //Skill
             createMap(mapper, Skill, SkillDto);
             createMap(mapper, createSkillDto, Skill);
-            createMap(mapper, Skill, createSkillDto);
+
+            //User
+            createMap(mapper, User, UserDto);
+            createMap(mapper, UserDto, User);
+            createMap(mapper, User, createSkillDto);
+            createMap(mapper, createSkillDto, User);
+            createMap(mapper, UserDto, createSkillDto);
+            createMap(mapper, createSkillDto, UserDto);
         };
     }
 }

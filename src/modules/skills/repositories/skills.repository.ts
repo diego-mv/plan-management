@@ -71,7 +71,7 @@ export class SkillsRepository implements ISkillsRepository {
             const deletedSkill = await this.skillModel.findOneAndDelete({id: id});
 
             if (!deletedSkill) {
-                throw new NotFoundException(`No se encontró la habilidad con el ID ${id}`);
+                throw new NotFoundException(`not found skill ${id}`);
             }
 
             return true;
