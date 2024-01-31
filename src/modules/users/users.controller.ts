@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Put, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResultPage } from 'src/dto/resultPage.dto';
 import { DeleteUserSkill } from './dto/deleteUserSkill.dto';
 import { updateUserDto } from './dto/updateUser.dto';
@@ -13,6 +13,29 @@ import { UsersService } from './services/users.service';
 export class UsersController {
 
   constructor(private usersService: UsersService) { }
+
+  @Get('searchUsers')
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, description: 'OK', isArray: true })
+  @ApiResponse({ status: 403, description: 'Forbidden' })
+  @ApiQuery({
+    name: 'userData',
+    required: false,
+    type: 'string'
+  })
+  @ApiQuery({
+    name: 'skillId',
+    required: false,
+    type: 'string'
+  })
+  @ApiQuery({
+    name: 'level',
+    required: false,
+    type: 'string'
+  })
+  async searchUsers(@Query('userData') userData: string = '', @Query('skillId') skillId: string = '', @Query('level') level: string = ''): Promise<UserDto[]> {
+    return await this.usersService.searchUsers(userData, skillId, level);
+  }
 
   @Get('getAll')
   @ApiOperation({ summary: 'Get all users' })

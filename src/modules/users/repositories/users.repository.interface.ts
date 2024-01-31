@@ -3,6 +3,7 @@ import { UserSkill } from "../schemas/userSkill.entity";
 
 export interface IUsersRepository {
     getUserWithSkills(userId: number): Promise<User>;
+    searchUsers(userData: string, skillId: string, level: string): Promise<User[]>;
     getAll(page?: number, size?: number): Promise<User[]>;
     getByEmail(email: string): Promise<User | null>;
     getById(id: number): Promise<User | null>;

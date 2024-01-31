@@ -17,7 +17,6 @@ import { ResultPage } from "src/dto/resultPage.dto";
 
 @Injectable()
 export class UsersService implements IUsersService {
-
     constructor(
         private usersRepository: UsersRepository,
         private skillsService: SkillsService,
@@ -48,6 +47,22 @@ export class UsersService implements IUsersService {
         return userDto;
     }
 
+    async searchUsers(userData: string, skillId: string, level: string): Promise<UserDto[]> {
+        const users = await this.usersRepository.searchUsers(userData, skillId, level);
+
+        const usersDto: UserDto[] = [];
+
+        users.map(u => {
+            usersDto.push({
+                id: u.id,
+                email: u.email,
+                name: u.name,
+                surname: u.surname,
+            });
+        });
+        
+        return usersDto;
+    }
 
     async getAll(page: number = 0, size: number = 3): Promise<ResultPage<UserDto>> {
         const users = await this.usersRepository.getAll(page, size);

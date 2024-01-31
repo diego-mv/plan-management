@@ -10,6 +10,45 @@ export class UsersRepository implements IUsersRepository {
 
     constructor(@InjectModel('Users') private userModel: Model<User>) { }
 
+    async searchUsers(userData: string, skillId: string, level: string): Promise<User[]> {
+        const mongoQuery: Record<string, any> = {};
+
+        if (userData && userData.trim()) {
+            const regexUserData = new RegExp(userData.trim(), 'i');
+            mongoQuery.$or = [
+                { name: { $regex: regexUserData } },
+                { surname: { $regex: regexUserData } },
+                { email: { $regex: regexUserData } },
+                { $expr: { $regexMatch: { input: { $concat: ['$name', ' ', '$surname'] }, regex: regexUserData } } }
+            ]
+        }
+
+        if (skillId && skillId.trim() && level && level.trim()) {
+            mongoQuery['skills'] = {
+                $elemMatch: {
+                    skillId: Number(skillId),
+                    level: Number(level)
+                }
+            };
+        } else {
+            if (skillId && skillId.trim()) {
+                mongoQuery['skills.skillId'] = Number(skillId);
+            }
+
+            if (level && level.trim()) {
+                mongoQuery['skills.level'] = Number(level);
+            }
+        }
+
+        try {
+            const users = await this.userModel.find(mongoQuery);
+            return users;
+        } catch (error) {
+            console.error('Error searching users:', error);
+            throw error;
+        }
+    }
+
     async getByEmail(email: string): Promise<User> {
         try {
             return await this.userModel.findOne({ email: email });

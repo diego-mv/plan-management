@@ -6,6 +6,7 @@ import { userSkillsDto } from "../dto/userSkills.dto";
 
 export interface IUsersService {
     login(user: string, password: string): Promise<UserDto | null>;
+    searchUsers(userData: string, skillId: string, level: string): UserDto[] | PromiseLike<UserDto[]>;
     getUserWithSkills(id: number): Promise<UserDto | null>;
     getAll(page: number, size: number): Promise<ResultPage<UserDto>>;
     getById(id: number): Promise<UserDto | null>;
