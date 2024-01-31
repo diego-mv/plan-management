@@ -15,7 +15,6 @@ import { UsersModule } from './modules/users/users.module';
         dbName: process.env.BD_NAME,
         user: process.env.BD_USER,
         pass: process.env.BD_PASS,
-
       }),
       inject: []
     }),
@@ -27,7 +26,7 @@ import { UsersModule } from './modules/users/users.module';
   controllers: [],
   providers: [],
 })
-export class AppModule { 
-  
+export class AppModule {
+
 }
 

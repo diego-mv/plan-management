@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { User } from "../schemas/user.entity";
+import { UserSkill } from "../schemas/userSkill.entity";
 import { IUsersRepository } from "./users.repository.interface";
 
 @Injectable()
@@ -19,9 +20,39 @@ export class UsersRepository implements IUsersRepository {
         }
     }
 
-    async getAll(): Promise<User[]> {
+    async getUserWithSkills(userId: number): Promise<User> {
         try {
-            const users: User[] = await this.userModel.find();
+            const user = await this.userModel.findOne({ id: userId })
+
+            return user;
+        }
+        catch (error) {
+            console.error('Error on find user with skills: ' + userId, error.message);
+            throw new Error('Error on find user  with skills: ' + userId);
+        }
+    }
+
+    async countAll(): Promise<number> {
+        try {
+            return await this.userModel.countDocuments();
+        }
+        catch (error) {
+            console.error('Error on count users', error.message);
+            throw new Error('Error on count users');
+        }
+    }
+
+    async getAll(page?: number, size?: number): Promise<User[]> {
+        try {
+            let users: User[] = [];
+
+            if (page && size) {
+                users = await this.userModel.find()
+                    .skip(page * size)
+                    .limit(size);;
+            } else {
+                users = await this.userModel.find();
+            }
 
             return users;
         }
@@ -93,5 +124,81 @@ export class UsersRepository implements IUsersRepository {
             console.error('error on delete user by id ' + id, error.message);
             throw new Error('error on delete user by id ' + id);
         }
+    }
+
+    async addUserSkill(userId: number, newUserSkill: UserSkill): Promise<boolean> {
+        try {
+
+            const updatedUser = await this.userModel.findOneAndUpdate(
+                {
+                    id: userId
+                },
+                {
+                    $push: { skills: newUserSkill }
+                },
+                {
+                    new: true
+                }
+            )
+            return updatedUser !== null;
+
+        } catch (error) {
+            console.error('error on add user skill', error.message);
+            throw new Error('error on add user skill');
+        }
+    }
+
+    async updateUserSkill(userId: number, updatedUserSkill: UserSkill): Promise<boolean> {
+        try {
+            const updatedUser = await this.userModel.findOneAndUpdate(
+                { id: userId, 'skills.skillId': updatedUserSkill.skillId },
+                {
+                    $set: {
+                        'skills.$.level': updatedUserSkill.level,
+                        'skills.$.learningDate': updatedUserSkill.learningDate
+                    }
+                },
+                { new: true }
+            );
+
+            return updatedUser !== null;
+        } catch (error) {
+            console.error('Error al actualizar habilidad del usuario:', error.message);
+            throw new Error('Error al actualizar habilidad del usuario');
+        }
+    }
+
+    async getUserSkill(userId: number, skillId: number): Promise<UserSkill | null> {
+        try {
+            const user = await this.userModel.findOne(
+                { id: userId }
+            )
+
+            return user?.skills.find(s => s.skillId === skillId) ?? null;
+        } catch (error) {
+            console.error('Error on get userSkill', error.message);
+            throw new Error('Error on get userSkill');
+        }
+    }
+
+    async DeleteUserSkill(userId: number, skillId: number): Promise<boolean> {
+        try {
+            const updatedUser = await this.userModel.findOneAndUpdate(
+                { id: userId },
+                {
+                    $pull: {
+                        skills: { skillId: skillId }
+                    }
+                },
+                { new: true }
+            );
+
+            return updatedUser !== null;
+        }
+        catch (error) {
+            console.error('Error on delete user skill:', error.message);
+            throw new Error('Error on delete user skill');
+        }
+
     }
 }

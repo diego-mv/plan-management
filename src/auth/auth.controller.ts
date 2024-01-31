@@ -12,6 +12,18 @@ export class AuthController {
 
     @HttpCode(HttpStatus.OK)
     @ApiOperation({ summary: 'Login with credentials' })
+    @ApiBody({
+        type: LoginDto,
+        examples: {
+            example: {
+                description: 'Login example',
+                value: {
+                    'user': 'diego@gmail.com',
+                    'password': 'Diego123!'
+                }
+            }
+        }
+    })
     @Post('login')
     async login(@Body() login: LoginDto) {
         const user = await this.authService.login(login.user, login.password);

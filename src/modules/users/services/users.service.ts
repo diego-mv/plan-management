@@ -2,19 +2,25 @@ import { Mapper } from "@automapper/core";
 import { InjectMapper } from "@automapper/nestjs";
 import { HttpException, Injectable } from "@nestjs/common";
 import { compare, hash } from 'bcrypt';
+import { SkillDto } from "src/modules/skills/dto/skill.dto";
+import { SkillsService } from "src/modules/skills/services/skills.service";
 import { createUserDto } from "../dto/createUser.dto";
+import { LevelUserSkillDto } from "../dto/levelUserSkill.dto";
 import { updateUserDto } from "../dto/updateUser.dto";
-import { User } from "../schemas/user.entity";
 import { UserDto } from "../dto/user.dto";
-import { UsersRepository } from "../repositories/users.repository";
-import { IUsersService } from "./users.service.interface";
 import { userSkillsDto } from "../dto/userSkills.dto";
+import { UsersRepository } from "../repositories/users.repository";
+import { User } from "../schemas/user.entity";
+import { UserSkill } from "../schemas/userSkill.entity";
+import { IUsersService } from "./users.service.interface";
+import { ResultPage } from "src/dto/resultPage.dto";
 
 @Injectable()
 export class UsersService implements IUsersService {
 
     constructor(
         private usersRepository: UsersRepository,
+        private skillsService: SkillsService,
         @InjectMapper() private readonly autoMapper: Mapper
     ) { }
 
@@ -32,15 +38,80 @@ export class UsersService implements IUsersService {
             return null;
         }
 
-        return findUser;
+        const userDto: UserDto = {
+            id: findUser.id,
+            email: findUser.email,
+            name: findUser.name,
+            surname: findUser.surname,
+        };
+
+        return userDto;
     }
 
-    async getAll(): Promise<UserDto[]> {
-        return await this.usersRepository.getAll();
+
+    async getAll(page: number = 0, size: number = 3): Promise<ResultPage<UserDto>> {
+        const users = await this.usersRepository.getAll(page, size);
+        const totalRows = await this.usersRepository.countAll();
+        const usersDto: UserDto[] = [];
+
+        users.map(u => {
+            usersDto.push({
+                id: u.id,
+                email: u.email,
+                name: u.name,
+                surname: u.surname,
+            });
+        })
+
+        const result: ResultPage<UserDto> = {
+            data: usersDto,
+            page: page,
+            size: size,
+            total: totalRows
+        }
+
+        return result;
+    }
+
+    async getUserWithSkills(id: number): Promise<UserDto | null> {
+        const user: User | null = await this.usersRepository.getUserWithSkills(id);
+        const skills: SkillDto[] = await this.skillsService.getAll();
+
+        const userSkills: LevelUserSkillDto[] = [];
+        user.skills.map(skill => {
+            const foundSkill = skills.find(s => s.id === skill.skillId);
+            if (foundSkill) {
+                userSkills.push({
+                    id: foundSkill.id,
+                    active: foundSkill.active,
+                    description: foundSkill.description,
+                    url: foundSkill.url,
+                    level: skill.level,
+                    learningDate: skill.learningDate
+                });
+            }
+        })
+
+        const userDto: UserDto = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            surname: user.surname,
+            skills: userSkills
+        };
+
+        return userDto;
     }
 
     async getById(id: number): Promise<UserDto> {
-        return await this.usersRepository.getById(id);
+        const user = await this.usersRepository.getById(id);
+        const userDto: UserDto = {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            surname: user.surname
+        };
+        return userDto;
     }
 
     async create(user: createUserDto): Promise<UserDto> {
@@ -54,7 +125,16 @@ export class UsersService implements IUsersService {
             password: passHash
         };
 
-        return await this.usersRepository.create(newUser);
+        const created = await this.usersRepository.create(newUser);
+
+        const userDto: UserDto = {
+            id: created.id,
+            email: created.email,
+            name: created.name,
+            surname: created.surname
+        }
+
+        return userDto;
     }
 
     async update(id: number, user: updateUserDto): Promise<UserDto> {
@@ -80,15 +160,50 @@ export class UsersService implements IUsersService {
         return await this.usersRepository.delete(id);
     }
 
-    async updateSkills(userSkills: userSkillsDto): Promise<boolean> {
-        throw new Error("Method not implemented.");
+    async addSkill(userSkill: userSkillsDto): Promise<boolean> {
+        const user: User = await this.usersRepository.getUserWithSkills(userSkill.userId);
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        let skillExist = user.skills.find(skill => skill.skillId === userSkill.skillId);
+        if (skillExist) {
+            if (skillExist.level === userSkill.skillLevel) {
+                throw new Error("Skill with this level already exist");
+            }
+            else {
+                const updatedSkill: UserSkill = {
+                    skillId: userSkill.skillId,
+                    level: userSkill.skillLevel,
+                    learningDate: userSkill.learningDate ?? new Date(),
+                }
+
+                return await this.usersRepository.updateUserSkill(userSkill.userId, updatedSkill);
+            }
+        }
+        else {
+            const newUserSkill: UserSkill = {
+                skillId: userSkill.skillId,
+                level: userSkill.skillLevel,
+                learningDate: userSkill.learningDate ?? new Date()
+            };
+
+            return await this.usersRepository.addUserSkill(userSkill.userId, newUserSkill);
+        }
+
+
+
     }
 
-    async addSkill(userId: number, skillId: number): Promise<UserDto> {
-        throw new Error("Method not implemented.");
-    }
+    async deleteSkill(userId: number, skillId: number): Promise<boolean> {
+        const userSkill: UserSkill = await this.usersRepository.getUserSkill(userId, skillId);
 
-    async deleteSkill(userId: number, skillId: number): Promise<UserDto> {
-        throw new Error("Method not implemented.");
+        if (!userSkill) {
+            throw new Error('The user does not have this skill')
+        }
+        const deleted = await this.usersRepository.DeleteUserSkill(userId, skillId);
+
+        return deleted;
     }
 }

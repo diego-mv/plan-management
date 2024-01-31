@@ -11,4 +11,7 @@ export class SkillDto {
     @AutoMap()
     @ApiProperty()
     active: boolean;
+    @AutoMap()
+    @ApiProperty()
+    url: string;
 }

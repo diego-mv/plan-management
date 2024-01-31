@@ -1,3 +1,5 @@
+import { UserSkill } from "./userSkill.entity";
+
 export class User {
     constructor(
         public id: number,
@@ -5,5 +7,6 @@ export class User {
         public name: string,
         public surname: string,
         public password: string,
-    ){}
+        public skills?: UserSkill[] 
+    ) { }
 }

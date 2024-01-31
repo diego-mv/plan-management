@@ -24,7 +24,8 @@ export class SkillsService implements ISkillsService {
         const skillsDto: SkillDto = {
             id: skill.id,
             active: skill.active,
-            description: skill.description
+            description: skill.description,
+            url: skill.url
         }
 
         return skillsDto;
@@ -34,16 +35,26 @@ export class SkillsService implements ISkillsService {
         const skill: Skill = {
             id: null,
             active: true,
-            description: newSkill.description
+            description: newSkill.description,
+            url: newSkill.url
         };
+
+        const exist = await this.skillsRepository.getByDescription(newSkill.description);
+
+        if (exist) {
+            throw new Error("Ya existe una habilidad con este nombre")
+        }
+
         return await this.skillsRepository.create(skill);
+
     }
 
     async update(id: number, skill: SkillDto): Promise<SkillDto> {
         const skillEntity: Skill = {
             id: skill.id,
             active: skill.active,
-            description: skill.description
+            description: skill.description,
+            url: skill.url
         };
         const skillUpdated = await this.skillsRepository.update(id, skillEntity);
 

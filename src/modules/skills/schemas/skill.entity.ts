@@ -4,5 +4,6 @@ export class Skill {
     constructor(
         public id: number,
         public description: string,
-        public active: boolean) { }
+        public active: boolean,
+        public url: string) { }
 }

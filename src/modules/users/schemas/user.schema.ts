@@ -11,6 +11,7 @@ export const UserSchema = new Schema({
     {
       skillId: { type: Number, ref: 'Skill' },
       level: { type: Number, default: 1 },
+      learningDate: { type: Date, default: new Date() }
     },
   ],
 });

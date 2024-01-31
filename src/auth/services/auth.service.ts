@@ -21,11 +21,12 @@ export class AuthService implements IAuthService {
             if (!findUser || findUser === null) {
                 return null;
             }
-
+            const expiresIn = 36000;
             const payload = { sub: user, username: user };
             return {
-                user: findUser.email,
-                access_token: await this.jwtService.signAsync(payload),
+                user: findUser,
+                access_token: await this.jwtService.signAsync(payload, { expiresIn: expiresIn }),
+                expiresIn: expiresIn
             };
         }
         catch (error) {

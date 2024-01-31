@@ -5,4 +5,7 @@ export class createSkillDto {
     @AutoMap()
     @ApiProperty()
     description: string;
+    @AutoMap()
+    @ApiProperty()
+    url: string;
 }

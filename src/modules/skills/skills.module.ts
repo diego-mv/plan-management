@@ -8,6 +8,7 @@ import { SkillsController } from './skills.controller';
 @Module({
     imports: [MongooseModule.forFeature([{ name: 'Skill', schema: SkillSchema }])],
     controllers: [SkillsController],
-    providers: [SkillsRepository, SkillsService, AutoMapperCustomProfile]
+    providers: [SkillsRepository, SkillsService, AutoMapperCustomProfile],
+    exports: [SkillsService]
 })
 export class SkillsModule { }

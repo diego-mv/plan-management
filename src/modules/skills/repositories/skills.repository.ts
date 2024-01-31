@@ -9,6 +9,21 @@ export class SkillsRepository implements ISkillsRepository {
 
     constructor(@InjectModel('Skill') private skillModel: Model<Skill>) { }
 
+    async getByDescription(description: string): Promise<Skill | null> {
+        try {
+            const skill: Skill | null = await this.skillModel.findOne({ description: new RegExp(`^${description}$`, 'i'), });
+
+            if (!skill) {
+                console.error('error on getByDescription: skill with descripcion ' + description + ' not found');
+            }
+
+            return skill;
+        } catch (error) {
+            console.error('Error on get skill by description ´' + description + '´:', error.message);
+            throw new Error('Error on get skill by description ´' + description + '´:');
+        }
+    }
+
 
     async getAll(): Promise<Skill[]> {
         try {
@@ -22,8 +37,8 @@ export class SkillsRepository implements ISkillsRepository {
 
     async getById(id: number): Promise<Skill | null> {
         try {
-            const skill: Skill | null = await this.skillModel.findOne({id: id});
-            
+            const skill: Skill | null = await this.skillModel.findOne({ id: id });
+
             if (!skill) {
                 console.error('error on getById: skill with id ' + id + ' not found');
             }
@@ -68,7 +83,7 @@ export class SkillsRepository implements ISkillsRepository {
 
     async delete(id: number): Promise<boolean> {
         try {
-            const deletedSkill = await this.skillModel.findOneAndDelete({id: id});
+            const deletedSkill = await this.skillModel.findOneAndDelete({ id: id });
 
             if (!deletedSkill) {
                 throw new NotFoundException(`not found skill ${id}`);
